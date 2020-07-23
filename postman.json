@@ -1,0 +1,707 @@
+{
+	"info": {
+		"_postman_id": "3fd4a622-b9ab-4249-974e-2182de1fbbe4",
+		"name": "Практика EPAM",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eb0c687d-2375-40b0-89ef-af6d41df2b48",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"    postman.setGlobalVariable(\"id\", jsonData.id);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'An error has occurred.'\", function () {    \r",
+							"    pm.expect(jsonData.message).to.eql(\"An error has occurred.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Login\": \"{{login}}\",\r\n  \"NativeName\": \"{{login}}\",\r\n  \"Password\": \"{{password}}\",\r\n  \"ConfirmPassword\": \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://104.40.150.146/api/user",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				},
+				"description": "Зарегистрировать пользователя"
+			},
+			"response": []
+		},
+		{
+			"name": "/token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "78ea1e65-cf29-4ec6-9bcb-fd59c408b1e9",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"postman.setGlobalVariable(\"access_token\", jsonData.access_token);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'invalid_grant'\", function () {\r",
+							"    pm.expect(jsonData.error).to.eql(\"invalid_grant\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "grant_type=password&username={{login}}&password={{password}}",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://104.40.150.146/token",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/user/{userId}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d9a2a260-2322-4db5-a683-d599cb27489e",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'invalid_grant.'\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.error).to.eql(\"invalid_grant\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://104.40.150.146/api/user/{{id}}",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"user",
+						"{{id}}"
+					]
+				},
+				"description": "Посмотреть информацию о себе"
+			},
+			"response": []
+		},
+		{
+			"name": "/me",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dbcea847-2af1-49ca-a73a-fbdf9d9c7f65",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'Authorization has been denied for this request.'\", function () {    \r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Authorization has been denied for this request.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://104.40.150.146/api/me",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/user/{userId}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "63b4da5e-02f0-4fec-ab5a-adbf61e0ecb6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var new_pass = pm.globals.get(\"new_password\");\r",
+							"    postman.setGlobalVariable(\"password\", new_pass);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'Authorization has been denied for this request.'\", function () {    \r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Authorization has been denied for this request.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"NativeName\": \"{{new_name}}\",\r\n    \"Role\": 1,\r\n    \"OldPassword\": \"{{password}}\",\r\n    \"Password\": \"{{new_password}}\",\r\n    \"ConfirmPassword\": \"{{new_password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://104.40.150.146/api/user/{{id}}",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"user",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/map",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b6fed563-7645-494d-add9-0091eb051a88",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    postman.setGlobalVariable(\"map_id\", jsonData[0].id);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'Authorization has been denied for this request.'\", function () { \r",
+							"    pm.expect(jsonData.message).to.eql(\"Authorization has been denied for this request.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://104.40.150.146/api/map",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"map"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/game",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1458ff0a-4ddf-4da1-8323-1fe5396fb21e",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    postman.setGlobalVariable(\"game_id\", jsonData.id);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'Authorization has been denied for this request.'\", function () { \r",
+							"    pm.expect(jsonData.message).to.eql(\"Authorization has been denied for this request.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Name\": \"Моя Игра\",\r\n  \"MapId\": \"{{map_id}}\",\r\n  \"SwitchTimeout\": 60000,\r\n  \"StartupTeamLives\": 3,\r\n  \"PoliceSpeed\": 4.0,\r\n  \"ThiefSpeed\": 4.4\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://104.40.150.146/api/game",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"game"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/games",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d72f4532-10fd-4bb0-8794-f065a5ef6220",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'Authorization has been denied for this request.'\", function () {    \r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Authorization has been denied for this request.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://104.40.150.146/api/games",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/game/{gameId}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e37b0fce-a643-45fa-8e37-72c9b89bbb1f",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'Authorization has been denied for this request.'\", function () {    \r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Authorization has been denied for this request.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://104.40.150.146/api/game/{{game_id}}",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"game",
+						"{{game_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/game",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "73a310de-3de8-4737-8cbb-d1877b479deb",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'Authorization has been denied for this request.'\", function () {    \r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Authorization has been denied for this request.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://104.40.150.146/api/game",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"game"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/game/{gameId}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8a22bec3-7481-49c7-a5db-d1c568085351",
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {\r",
+							"    pm.response.to.have.status(202);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'Authorization has been denied for this request.'\", function () {    \r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Authorization has been denied for this request.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://104.40.150.146/api/game/{{game_id}}",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"game",
+						"{{game_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/maps",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dc00c690-1f0b-4d93-835f-407cc13c482c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'Authorization has been denied for this request.'\", function () {    \r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Authorization has been denied for this request.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://104.40.150.146/api/maps",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"maps"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/user/{userId}/maps",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "65666630-6345-49e6-a69d-7fbf3cb5ca8d",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message is 'Authorization has been denied for this request.'\", function () {    \r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Authorization has been denied for this request.\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://104.40.150.146/api/user/{{id}}/maps",
+					"protocol": "http",
+					"host": [
+						"104",
+						"40",
+						"150",
+						"146"
+					],
+					"path": [
+						"api",
+						"user",
+						"{{id}}",
+						"maps"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
